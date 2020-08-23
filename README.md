@@ -76,4 +76,4 @@ This is implementation of a graphql + apollo powered server to provide subtextse
 ## Implementation Details
 - Have used apollo with graphql
 - A postgres db capability is there but not used at this moment
-- This is just the server code. For frontend/client code would use apoolo-client with apollo-links for handling retries, etc.
+- This is just the server code. For frontend/client code would use apollo-client with apollo-links for handling retries, etc.
