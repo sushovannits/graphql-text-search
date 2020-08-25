@@ -63,6 +63,7 @@ This is implementation of a graphql + apollo powered server to provide subtextse
 - Right now as API providers I am using these mock endpoints:
   - "https://run.mocky.io/v3/a0bebe23-7351-4ee8-a483-07db484de2f9" -> Provides the text
   - "https://run.mocky.io/v3/068e3ffc-6a54-4dfa-8ada-4d2370d2f6c0" -> Provides the subtext to search
+  - "https://run.mocky.io/v3/6bc98dc8-79f6-4f31-bbe1-f8bf60c93a79" -> Submit Result endpoint
   
   This is in file `SubTextSearchService.ts`
 - I will try to see if I can come up with a mock server which fails randomly or a specific percentage of time. But the logic is already there for handling retry in case of failures. 
