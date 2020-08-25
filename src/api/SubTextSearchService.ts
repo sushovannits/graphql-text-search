@@ -1,6 +1,5 @@
 // import * as db from "../db";
-import * as faker from "faker";
-
+import fetch from "node-fetch";
 export interface Subtext {
   subtexts: string[]
 }
@@ -9,9 +8,11 @@ export interface SubtextResult {
   subtext: string,
   result: string
 }
-
-export interface SubtextSearchResult {
-  text: string,
+export interface TextToSearch {
+  text: string
+}
+export interface TextSearchResult {
+  text: TextToSearch,
   subtext: Subtext,
   results: SubtextResult[]
 }
@@ -22,17 +23,24 @@ export interface Result {
   results: SubtextResult
 }
 
-export const getText = async() => {
-  return faker.lorem.text();
-  // return await db.query("SELECT text_to_search  FROM search_text ORDER BY random() limit 1");
+async function query(url: string): Promise<any> {
+  return fetch(url).then(res => {
+    if(res.ok) return res.json();
+    return query(url);
+  }).catch(_ => query(url));
 }
 
-export const search = (textToSearch: string, subtextInput: Subtext): SubtextSearchResult => {
+export const search = async (): Promise<TextSearchResult> => {
+  const [textToSearch, subtextInput] = await Promise.all([
+    query("https://run.mocky.io/v3/a0bebe23-7351-4ee8-a483-07db484de2f9"),
+    query("https://run.mocky.io/v3/068e3ffc-6a54-4dfa-8ada-4d2370d2f6c0")
+  ]);
   const result: SubtextResult[] = [];
-  const searchResult = subtextInput.subtexts.reduce((acc, sub) => {
+  const searchResult = subtextInput.subtexts.reduce((acc: {subtext: string; result: string}[], sub: string) => {
+    const res = ([...textToSearch.text.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString();
     acc.push({
       subtext: sub,
-      result: ([...textToSearch.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString()
+      result: res.length === 0 ? "<No Output>" : res
     });
     return acc;
   }, result);
