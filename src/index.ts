@@ -1,6 +1,5 @@
 import { ApolloServer, gql, IResolvers } from "apollo-server";
 import {
-  getText,
   search,
   submitResult
 } from "./api";
@@ -9,15 +8,6 @@ const typeDefs = gql`
   type Subtext
   {
     subtexts: [String!]!
-  }
-  input SubtextInput
-  {
-    subtexts: [String!]!
-  }
-  input SearchInput
-  {
-    textToSearch: String!
-    subtextToSearch: SubtextInput
   }
   type SubtextResult
   {
@@ -29,9 +19,13 @@ const typeDefs = gql`
     subtext: String!
     result : String!
   }
-  type TextSearchResult
+  type TextToSearch
   {
     text: String!
+  }
+  type TextSearchResult
+  {
+    text: TextToSearch!
     subtext: Subtext!
     results: [SubtextResult!]!
   }
@@ -42,8 +36,7 @@ const typeDefs = gql`
     results : [SubtextResultInput!]!
   }
   type Query {
-    textToSearch: String! 
-    search(searchInput: SearchInput): TextSearchResult!
+    searchResult: TextSearchResult
   }
   type Mutation {
     submitResults(results : SubmitResultsInput): Boolean
@@ -52,9 +45,8 @@ const typeDefs = gql`
 
 const resolvers: IResolvers = {
   Query: {
-    textToSearch: () => getText(),
-    search: (_, args) => {
-      return search(args.searchInput.textToSearch, args.searchInput.subtextToSearch)
+    searchResult: () => {
+      return search();
     }
   },
   Mutation: {

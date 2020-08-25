@@ -1,6 +1,4 @@
 // import * as db from "../db";
-import * as faker from "faker";
-
 export interface Subtext {
   subtexts: string[]
 }
@@ -9,9 +7,11 @@ export interface SubtextResult {
   subtext: string,
   result: string
 }
-
-export interface SubtextSearchResult {
-  text: string,
+export interface TextToSearch {
+  text: string
+}
+export interface TextSearchResult {
+  text: TextToSearch,
   subtext: Subtext,
   results: SubtextResult[]
 }
@@ -22,17 +22,18 @@ export interface Result {
   results: SubtextResult
 }
 
-export const getText = async() => {
-  return faker.lorem.text();
-  // return await db.query("SELECT text_to_search  FROM search_text ORDER BY random() limit 1");
-}
-
-export const search = (textToSearch: string, subtextInput: Subtext): SubtextSearchResult => {
+export const search = (): TextSearchResult => {
+  const textToSearch = {
+    text: "hello world He"
+  }; // This will be replaced by the rest api call
+  const subtextInput = {
+    "subtexts": ["tt", "lt"]
+  };
   const result: SubtextResult[] = [];
   const searchResult = subtextInput.subtexts.reduce((acc, sub) => {
     acc.push({
       subtext: sub,
-      result: ([...textToSearch.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString()
+      result: ([...textToSearch.text.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString()
     });
     return acc;
   }, result);
