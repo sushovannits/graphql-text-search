@@ -1,5 +1,10 @@
 // import * as db from "../db";
 import fetch from "node-fetch";
+import {RequestInit} from "node-fetch";
+const textToSearchUrl = "https://run.mocky.io/v3/a0bebe23-7351-4ee8-a483-07db484de2f9";
+const subtextUrl = "https://run.mocky.io/v3/068e3ffc-6a54-4dfa-8ada-4d2370d2f6c0";
+const submitResultUrl = "https://run.mocky.io/v3/6bc98dc8-79f6-4f31-bbe1-f8bf60c93a79";
+
 export interface Subtext {
   subtexts: string[]
 }
@@ -23,17 +28,20 @@ export interface Result {
   results: SubtextResult
 }
 
-async function query(url: string): Promise<any> {
-  return fetch(url).then(res => {
+async function query(url: string, params: RequestInit = {}): Promise<any> {
+  try {
+    const res = await fetch(url, params);
     if(res.ok) return res.json();
-    return query(url);
-  }).catch(_ => query(url));
+  } catch(err) {
+    return query(url, params);
+  }
+  return query(url, params);
 }
 
 export const search = async (): Promise<TextSearchResult> => {
   const [textToSearch, subtextInput] = await Promise.all([
-    query("https://run.mocky.io/v3/a0bebe23-7351-4ee8-a483-07db484de2f9"),
-    query("https://run.mocky.io/v3/068e3ffc-6a54-4dfa-8ada-4d2370d2f6c0")
+    query(textToSearchUrl),
+    query(subtextUrl)
   ]);
   const result: SubtextResult[] = [];
   const searchResult = subtextInput.subtexts.reduce((acc: {subtext: string; result: string}[], sub: string) => {
@@ -53,5 +61,10 @@ export const search = async (): Promise<TextSearchResult> => {
 
 export const submitResult = async(result: Result) => {
   console.log("Submitted input " + JSON.stringify(result))
-  return true; 
+  await query(submitResultUrl, {
+    method: 'POST',
+    body: JSON.stringify(result),
+    headers: {'Content-Type': 'application/json'}
+  });
+  return true;
 }
