@@ -27,7 +27,7 @@ async function query(url: string): Promise<any> {
   return fetch(url).then(res => {
     if(res.ok) return res.json();
     return query(url);
-  })
+  }).catch(_ => query(url));
 }
 
 export const search = async (): Promise<TextSearchResult> => {
