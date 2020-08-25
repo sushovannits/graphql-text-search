@@ -37,9 +37,10 @@ export const search = async (): Promise<TextSearchResult> => {
   ]);
   const result: SubtextResult[] = [];
   const searchResult = subtextInput.subtexts.reduce((acc: {subtext: string; result: string}[], sub: string) => {
+    const res = ([...textToSearch.text.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString();
     acc.push({
       subtext: sub,
-      result: ([...textToSearch.text.matchAll(new RegExp(sub, 'gi'))].map(a => a.index)).toString()
+      result: res.length === 0 ? "<No Output>" : res
     });
     return acc;
   }, result);
